@@ -23,7 +23,7 @@ function usage()
 {
   echo "    again [addOnly] N [ADJUST]"
   echo "      Mark [addOnly] N as complete and recreate with any due date set as today."
-  echo "    If the optional `addOnly` parameter is set, the original item N will **not**"
+  echo "    If the optional addOnly parameter is set, the original item N will **not**"
   echo "      be marked as done. For the recreated item all done information (x marker"
   echo "      and done date) will be removed. This can be used to readd done items."
   echo "    If the optional ADJUST is set"
