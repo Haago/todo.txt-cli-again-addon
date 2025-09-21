@@ -18,6 +18,9 @@
 #along with again.  If not, see <http://www.gnu.org/licenses/>.
 
 readonly DATE_FORMAT="%F" # %F == %Y-%m-%d for BSD and GNU
+readonly SED_DATE_RE="[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}"
+readonly BASH_DATE_RE="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+readonly AGAIN_TAG="${TODO_AGAIN_TAG:-again}"
 
 # Set $TODAY to today's date
 function today()

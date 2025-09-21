@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+#Copyright (C) 2025 Haago.
+#
+#This file is part of again.
+#
+#again is free software: you can redistribute it and/or modify
+#it under the terms of the GNU General Public License as published by
+#the Free Software Foundation, either version 3 of the License, or
+#(at your option) any later version.
+#
+#again is distributed in the hope that it will be useful,
+#but WITHOUT ANY WARRANTY; without even the implied warranty of
+#MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#GNU General Public License for more details.
+#
+#You should have received a copy of the GNU General Public License
+#along with again.  If not, see <http://www.gnu.org/licenses/>.
+
+source `dirname $(realpath $0 || echo $0)`/againHelpers.sh
+
+function usage()
+{
+  echo "    again_add_done [+][ADJUST]"
+  echo "      Recreate all *done* tasks containing the "again" tag with any due" 
+  echo "      date and deferral date set based upon the "again" tag value "
+  echo "    If the optional ADJUST is set"
+  echo "      Recreate with any due date and deferral date set as ADJUST from *today*."
+  echo "    If the optional +ADJUST is set"
+  echo "      Recreate with any due date and deferral date set as ADJUST from *their "
+  echo "      original values*."
+  echo ""
+  exit
+}
+
+readonly action=$1
+shift
+ADJUST=$1
+
+[ "$action" = "usage" ] && usage
+[ ! -f "$TODO_FILE" ] && error "$TODO_FILE: no such file"
+grep -n '^[x]' "$TODO_FILE" | sed 's/:.*//' | while read -r N; do
+    if [ -n "${N}" ]; then
+        "$TODO_FULL_SH" again addOnly "$N" "$ADJUST"
+    fi
+done

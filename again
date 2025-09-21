@@ -19,30 +19,34 @@
 
 source `dirname $(realpath $0 || echo $0)`/againHelpers.sh
 
-readonly SED_DATE_RE="[0-9]\{4\}-[0-9]\{2\}-[0-9]\{2\}"
-readonly BASH_DATE_RE="[0-9]{4}-[0-9]{2}-[0-9]{2}"
-readonly AGAIN_TAG="${TODO_AGAIN_TAG:-again}"
-
 function usage()
 {
-  echo "    again N"
-  echo "      Mark N as complete and recreate with any due date set as today."
-  echo "    again N ADJUST"
-  echo "      Mark N as complete and recreate with any due date and deferral date"
-  echo "      set as ADJUST from _today_."
-  echo "    again N +ADJUST"
-  echo "      Mark N as complete and recreate with any due date and deferral date"
-  echo "      set as ADJUST from _their original values_."
+  echo "    again [addOnly] N [ADJUST]"
+  echo "      Mark [addOnly] N as complete and recreate with any due date set as today."
+  echo "    If the optional `addOnly` parameter is set, the original item N will **not**"
+  echo "      be marked as done. For the recreated item all done information (x marker"
+  echo "      and done date) will be removed. This can be used to readd done items."
+  echo "    If the optional ADJUST is set"
+  echo "      Recreate with any due date and deferral date set as ADJUST from *today*."
+  echo "    If the optional +ADJUST is set"
+  echo "      Recreate with any due date and deferral date set as ADJUST from *their "
+  echo "      original values*."
   echo ""
   exit
 }
 
 function parse_options()
 {
+  ADD_ONLY=false
   local action=$1
   shift
 
   [ "$action" = "usage" ] && usage
+
+  if [ "$1" = "addOnly" ]; then
+    ADD_ONLY=true
+    shift
+  fi
 
   # Retrieve the item number from the arguments
   ITEM=$1
@@ -129,6 +133,12 @@ function replace_deferral_date()
   replace_tagged_date
 }
 
+# Remove the x marker and the done date in $LINE
+function remove_done_markers()
+{
+LINE=$(sed 's|^[xX] \(([A-Z]) \)\?\(\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\} \)\([0-9]\{2,4\}-[0-9]\{2\}-[0-9]\{2\}\)\)\?|\4|' <<< "$LINE")
+}
+
 parse_options "$@"
 determine_date_version
 today
@@ -145,10 +155,12 @@ replace_deferral_date
 
 if [[ "$LINE" != "" ]]
 then
-  "$TODO_FULL_SH" command do "$ITEM"
+  # Only do with not add only
+  ! "$ADD_ONLY" && "$TODO_FULL_SH" command do "$ITEM"
 
   if [[ -z "$TODO_NO_AGAIN_IF_NOT_TAGGED" || "$LINE" =~ .*" $AGAIN_TAG:" ]]
   then
+    "$ADD_ONLY" && remove_done_markers
     "$TODO_FULL_SH" command add "$LINE"
   fi
 fi

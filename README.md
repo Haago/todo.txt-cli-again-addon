@@ -29,20 +29,26 @@ $ ln -s again/again do
 
 # Usage
 
-    $ todo.sh again N
+## Again
+
+    $ todo.sh again [addOnly] N
 Mark item N as done, and then recreate it, with the creation date set as today's
 date, and any existing due date set to today. Deferral date is not affected by
 this operation. There is an exception if the item contains an `again:ADJUST`
 tag; see below.
 
-    $ todo.sh again N ADJUST
+    $ todo.sh again [addOnly] N ADJUST
 Mark item N as done, and then recreate it with the creation date set as today's
 date, and any existing due date and deferral date set to ADJUST from today.
 
-    $ todo.sh again N +ADJUST
+    $ todo.sh again [addOnly] N +ADJUST
 Mark item N as done, and then recreate it with the creation date set as today's
 date, and any existing due date and deferral date set to ADJUST from their
 previous values.
+
+If the optional `addOnly` parameter is set, the original item N will **not**
+be marked as done. For the recreated item all done information (x marker and
+done date) will be removed. This can be used to readd done items.
 
 You can also encode the adjustment interval in the task description with the
 `again:` tag.
@@ -67,6 +73,14 @@ line.
     TODO: 9 marked as done.
     10 (A) Do important things due:2001-01-11 t:2001-01-11 again:+5
     TODO: 10 added.
+
+## Again_ADD_DONE
+
+    $ todo.sh again_add_done [+][ADJUST]
+Recreate all items marked as done as new tasks (removed x marker and done date)
+with the adapted dates. This can be used in combination with the
+`TODO_NO_AGAIN_IF_NOT_TAGGED` flag to readd all tasks that have been marked as
+done outside of todo.sh
 
 ## Filter
 
